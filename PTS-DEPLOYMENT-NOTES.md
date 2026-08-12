@@ -18,8 +18,17 @@ block users out of mobile email.
 4. Deploy the CA policy **report-only**, watch ~1 week, identify stragglers.
 5. Migrate stragglers → enable.
 
-Break-glass accounts remain excluded throughout (`CA-BreakGlassAccounts - Exclude` — the ONLY
-exclusion, per the locked PTS model).
+Break-glass accounts remain excluded throughout (`CA-BreakGlassAccounts - Exclude`, per the
+locked PTS model — see the exclusion-model section below).
+
+## Exclusion model — break-glass only, with ONE documented constant
+
+Every PTS CA policy excludes `CA-BreakGlassAccounts - Exclude` and nothing else, **except
+CA000**, which additionally excludes the **Directory Synchronization Accounts** role
+(`d29b2b05-8046-44ba-8758-1e26182fcf32`). This is Microsoft's standard guidance: requiring MFA
+on the Entra Connect / cloud-sync service account breaks directory synchronisation. It is a
+role-scoped exclusion (not a user or group), it is intentional, and it is **not** a precedent
+for other exclusions — any additional exclusion request is a baseline-owner decision.
 
 ## Licensing note (corrects an old claim)
 
