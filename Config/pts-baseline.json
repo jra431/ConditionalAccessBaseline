@@ -1,0 +1,293 @@
+{
+  "$comment": "PTS baseline manifest (owner decision 2026-09-18). Machine-readable facts about each template that the Graph export cannot carry: persona, interference (low|known|high), blast_radius (the soak checklist in words), depends_on (layer ids below), soak (day|week|hold|none), enable_step (doc 05 §C4), report_only_capable (false for continuous access evaluation), client_gate (rows apply only where the client declares the gate). Templates are untouched; SIGIL's seeder reads this into baseline_policies (labels tokens, deploy_phase, sequencing_note). Tiers under rule H: low soaks one business day, known a week, hold until every depends_on layer reads present, none deploys Off until its step.",
+  "version": 1,
+  "layers": {
+    "intune-mam-ios": "Intune App Protection, iOS (pts-intune-baseline IOS/AppProtection)",
+    "intune-mam-android": "Intune App Protection, Android",
+    "intune-mdm-windows": "Intune device management, Windows (the compliance signal)",
+    "intune-mdm-macos": "Intune device management, macOS",
+    "intune-mdm-ios": "Intune device management, iOS (corp-owned)",
+    "intune-mdm-android": "Intune device management, Android (corp-owned / AOSP)"
+  },
+  "policies": {
+    "CA000-Global-IdentityProtection-AnyApp-AnyPlatform-MFA": {
+      "persona": "Global",
+      "interference": "known",
+      "blast_radius": "users who never registered MFA become lockouts, not prompts; Directory Synchronization Accounts stay excluded",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 3
+    },
+    "CA001-Global-AttackSurfaceReduction-AnyApp-AnyPlatform-BLOCK-CountryWhitelist": {
+      "persona": "Global",
+      "interference": "known",
+      "blast_radius": "travellers and offshore staff; handled per trip by doc 10 Decision 5 (CIPP Vacation Mode on CA001 + CIPP Travel Policy + Huntress Expected rule), never by widening ALLOWED COUNTRIES",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 5
+    },
+    "CA002-Global-IdentityProtection-AnyApp-AnyPlatform-Block-LegacyAuthentication": {
+      "persona": "Global",
+      "interference": "known",
+      "blast_radius": "scanners, copiers and line-of-business apps on legacy protocols",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 2
+    },
+    "CA003-Global-BaseProtection-RegisterOrJoin-AnyPlatform-MFA": {
+      "persona": "Global",
+      "interference": "low",
+      "blast_radius": "device register/join prompts for MFA; shared-device accounts are excluded",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 3
+    },
+    "CA004-Global-IdentityProtection-AnyApp-AnyPlatform-AuthenticationFlows": {
+      "persona": "Global",
+      "interference": "known",
+      "blast_radius": "blocks device code flow, which Teams Android devices use for remote sign-in; shared-device accounts are excluded",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 3
+    },
+    "CA005-Global-DataProtection-Office365-iOSenAndroid-ClientApps-Unmanaged-AppEnforcedRestrictions": {
+      "persona": "Global",
+      "interference": "high",
+      "blast_radius": "native iOS Mail and Gmail/Samsung Mail users lose work mail the moment it enforces",
+      "depends_on": [
+        "intune-mam-ios",
+        "intune-mam-android"
+      ],
+      "soak": "hold",
+      "enable_step": 8
+    },
+    "CA006-Global-DataProtection-Office365-AnyPlatform-Browser-Unmanaged-AppEnforceRestrictions": {
+      "persona": "Global",
+      "interference": "high",
+      "blast_radius": "unmanaged browser sessions to Office 365 are restricted; users on personal browsers notice",
+      "depends_on": [
+        "intune-mam-ios",
+        "intune-mam-android"
+      ],
+      "soak": "hold",
+      "enable_step": 8
+    },
+    "CA006-Global-DataProtection-Office365-iOSenAndroid-RequireAppProtection": {
+      "persona": "Global",
+      "interference": "high",
+      "blast_radius": "every mobile user without the managed apps and Authenticator is blocked",
+      "depends_on": [
+        "intune-mam-ios",
+        "intune-mam-android"
+      ],
+      "soak": "hold",
+      "enable_step": 8
+    },
+    "CA100-Admins-IdentityProtection-AdminPortals-AnyPlatform-MFA": {
+      "persona": "Admins",
+      "interference": "low",
+      "blast_radius": "admins are prompted for MFA at the admin portals; expected",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 1
+    },
+    "CA101-Admins-IdentityProtection-AnyApp-AnyPlatform-MFA": {
+      "persona": "Admins",
+      "interference": "low",
+      "blast_radius": "admins are prompted for MFA everywhere; expected",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 1
+    },
+    "CA102-Admins-IdentityProtection-AllApps-AnyPlatform-SigninFrequency": {
+      "persona": "Admins",
+      "interference": "low",
+      "blast_radius": "admins re-authenticate at the configured frequency",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 1
+    },
+    "CA103-Admins-IdentityProtection-AllApps-AnyPlatform-PersistentBrowser": {
+      "persona": "Admins",
+      "interference": "low",
+      "blast_radius": "admin browser sessions no longer persist",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 1
+    },
+    "CA104-Admins-IdentityProtection-AllApps-AnyPlatform-ContinuousAccessEvaluation": {
+      "persona": "Admins",
+      "interference": "low",
+      "blast_radius": "revocations reach live admin sessions; no report-only mode exists, deploy Off",
+      "depends_on": [],
+      "soak": "none",
+      "enable_step": 7,
+      "report_only_capable": false
+    },
+    "CA105-Admins-IdentityProtection-AnyApp-AnyPlatform-PhishingResistantMFA": {
+      "persona": "Admins",
+      "interference": "known",
+      "blast_radius": "admins without a registered FIDO2 key or passkey are blocked",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 1
+    },
+    "CA200-Internals-IdentityProtection-AnyApp-AnyPlatform-MFA": {
+      "persona": "Internals",
+      "interference": "known",
+      "blast_radius": "internal users who never registered MFA",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 4
+    },
+    "CA202-Internals-IdentityProtection-AllApps-WindowsMacOS-SigninFrequency-UnmanagedDevices": {
+      "persona": "Internals",
+      "interference": "high",
+      "blast_radius": "every internal user on an unmanaged Windows or Mac re-authenticates constantly until the device layer exists",
+      "depends_on": [
+        "intune-mdm-windows",
+        "intune-mdm-macos"
+      ],
+      "soak": "hold",
+      "enable_step": 4
+    },
+    "CA203-Internals-AppProtection-MicrosoftIntuneEnrollment-AnyPlatform-MFA": {
+      "persona": "Internals",
+      "interference": "low",
+      "blast_radius": "Intune enrollment asks for MFA; expected",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 4
+    },
+    "CA204-Internals-AttackSurfaceReduction-AllApps-AnyPlatform-BlockUnknownPlatforms": {
+      "persona": "Internals",
+      "interference": "low",
+      "blast_radius": "unknown-platform sign-ins are the point; supported platforms are untouched",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 4
+    },
+    "CA205-Internals-BaseProtection-AnyApp-Windows-CompliantorAADHJ": {
+      "persona": "Internals",
+      "interference": "high",
+      "blast_radius": "every Windows user whose device is not enrolled or not compliant is blocked",
+      "depends_on": [
+        "intune-mdm-windows"
+      ],
+      "soak": "hold",
+      "enable_step": 4
+    },
+    "CA206-Internals-IdentityProtection-AllApps-AnyPlatform-PersistentBrowser": {
+      "persona": "Internals",
+      "interference": "low",
+      "blast_radius": "internal browser sessions no longer persist",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 4
+    },
+    "CA207-Internals-AttackSurfaceReduction-SelectedApps-AnyPlatform-BLOCK": {
+      "persona": "Internals",
+      "interference": "known",
+      "blast_radius": "the selected apps are blocked for internals; confirm the app list against real use",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 4
+    },
+    "CA208-Internals-BaseProtection-AnyApp-MacOS-Compliant": {
+      "persona": "Internals",
+      "interference": "high",
+      "blast_radius": "every Mac user whose device is not enrolled or not compliant is blocked",
+      "depends_on": [
+        "intune-mdm-macos"
+      ],
+      "soak": "hold",
+      "enable_step": 4
+    },
+    "CA209-Internals-IdentityProtection-AllApps-AnyPlatform-ContinuousAccessEvaluation": {
+      "persona": "Internals",
+      "interference": "low",
+      "blast_radius": "revocations reach live internal sessions; no report-only mode exists, deploy Off",
+      "depends_on": [],
+      "soak": "none",
+      "enable_step": 7,
+      "report_only_capable": false
+    },
+    "CA300-ServiceAccounts-IdentityProtection-AnyApp-AnyPlatform-MFA": {
+      "persona": "ServiceAccounts",
+      "interference": "known",
+      "blast_radius": "non-human sign-ins that cannot answer MFA; confirm each service account's real sign-in path first",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 6
+    },
+    "CA301-ServiceAccounts-AttackSurfaceReduction-AllApps-AnyPlatform-BlockUntrustedLocations": {
+      "persona": "ServiceAccounts",
+      "interference": "known",
+      "blast_radius": "service accounts signing in from outside ALLOWED COUNTRIES - SERVICE ACCOUNTS",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 6
+    },
+    "CA400-GuestUsers-IdentityProtection-AnyApp-AnyPlatform-MFA": {
+      "persona": "Guests",
+      "interference": "low",
+      "blast_radius": "guests are prompted for MFA; expected",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 6
+    },
+    "CA401-GuestUsers-AttackSurfaceReduction-AllApps-AnyPlatform-BlockNonGuestAppAccess": {
+      "persona": "Guests",
+      "interference": "known",
+      "blast_radius": "guests lose access to apps outside the allowed set; confirm which apps guests actually need",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 6
+    },
+    "CA402-GuestUsers-IdentityProtection-AllApps-AnyPlatform-SigninFrequency": {
+      "persona": "Guests",
+      "interference": "low",
+      "blast_radius": "guests re-authenticate at the configured frequency",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 6
+    },
+    "CA403-GuestUsers-IdentityProtection-AllApps-AnyPlatform-PersistentBrowser": {
+      "persona": "Guests",
+      "interference": "low",
+      "blast_radius": "guest browser sessions no longer persist",
+      "depends_on": [],
+      "soak": "day",
+      "enable_step": 6
+    },
+    "CA404-GuestUsers-AttackSurfaceReduction-SelectedApps-AnyPlatform-BLOCK": {
+      "persona": "Guests",
+      "interference": "known",
+      "blast_radius": "the selected apps are blocked for guests; confirm the app list",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 6
+    },
+    "CA500-SharedDevices-BaseProtection-AnyApp-AnyPlatform-BLOCK-UntaggedDevice": {
+      "persona": "SharedDevices",
+      "interference": "known",
+      "blast_radius": "a shared-device account signing in from any device not stamped PTS-SharedDevice, including an unregistered one, is blocked; stamp every board and kiosk before enabling",
+      "depends_on": [],
+      "soak": "week",
+      "enable_step": 6,
+      "client_gate": "has_shared_devices"
+    },
+    "CA501-SharedDevices-BaseProtection-AnyApp-AnyPlatform-CompliantDevice": {
+      "persona": "SharedDevices",
+      "interference": "high",
+      "blast_radius": "every shared device that is not Intune-enrolled and compliant is blocked",
+      "depends_on": [
+        "intune-mdm-windows",
+        "intune-mdm-android"
+      ],
+      "soak": "hold",
+      "enable_step": 6,
+      "client_gate": "has_shared_devices"
+    }
+  }
+}
