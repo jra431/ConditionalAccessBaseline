@@ -58,7 +58,8 @@
       "includeGroups": [],
       "excludeGroups@odata.type": "#Collection(String)",
       "excludeGroups": [
-        "CA-BreakGlassAccounts - Exclude"
+        "CA-BreakGlassAccounts - Exclude",
+        "PTS-Shared-Device-Accounts"
       ],
       "includeRoles@odata.type": "#Collection(String)",
       "includeRoles": [],
