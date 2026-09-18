@@ -43,6 +43,30 @@ is retired — it opened the country to every user in the tenant and relied on a
 its removal. SIGIL shows the exclusion on the CA001 row with the traveller and the end date, and
 flags one that outlives its date.
 
+**Shared-device accounts (owner decision 2026-09-18).** Room boards, kiosks, shop-floor terminals and
+signage sign in with an always-on interactive session on a device visitors sit in front of. They are the
+`SharedDevices` persona: group `PTS-Shared-Device-Accounts` (dynamic on the `shd-` UPN prefix), templates
+**CA500** (block any sign-in from a device not stamped `extensionAttribute1 = PTS-SharedDevice`; the
+device class rides `extensionAttribute2`) and **CA501** (require compliant device, held until the
+device-management layer exists). No MFA policy: Microsoft's Teams Rooms guidance says interactive MFA is
+unsupported or not to be enforced for these accounts, sign-in frequency and persistent browser are
+unsupported, and device code flow must stay open on Android. Because the Global 0xx set targets all
+users, `PTS-Shared-Device-Accounts` is the **second documented constant exclusion**, on CA000, CA003,
+CA004, CA005 and both CA006 variants — exactly Microsoft's guidance to exclude resource accounts from
+every existing policy. CA500 deploys report-only; stamp every board before it goes On, because an
+unregistered device matches a negative filter and is blocked.
+
+## Machine-readable manifest — `Config/pts-baseline.json`
+
+The Graph exports carry the settings; `Config/pts-baseline.json` carries what they cannot: per policy,
+the persona, the interference tier (`low` / `known` / `high`), the blast radius in words, the layers it
+depends on, the soak (`day` / `week` / `hold` / `none`), the doc 05 §C4 enable step, whether report-only
+exists, and a client gate. SIGIL seeds it alongside the templates and drives the board, the playbook and
+the "still blocked?" reading from it. Tiers under rule H: everything still goes report-only first — a
+`low` policy soaks one business day, `known` a week with its blast-radius checklist, `hold` until every
+layer it depends on reads present, and the two continuous-access-evaluation policies deploy Off until
+their step. Edit the manifest and tag the repo; never the templates, for these facts.
+
 ## Licensing note (corrects an old claim)
 
 CA005/CA006 were previously held back as "not licensed" — **that was wrong.** Business Premium
