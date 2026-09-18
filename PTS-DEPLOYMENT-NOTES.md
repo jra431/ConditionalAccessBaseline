@@ -30,6 +30,19 @@ on the Entra Connect / cloud-sync service account breaks directory synchronisati
 role-scoped exclusion (not a user or group), it is intentional, and it is **not** a precedent
 for other exclusions — any additional exclusion request is a baseline-owner decision.
 
+**Time-boxed travel exclusions (owner decision 2026-09-17).** Travellers are handled per person
+and per trip, never by widening the tenant: **CIPP Vacation Mode** on CA001 (CIPP creates and
+reuses a `Vacation Exclusion - CA001-…` group on that policy and schedules the traveller in on
+the start date and out on the end date), a **CIPP Travel Policy** for the destination (a temporary
+block-everywhere-except-the-destination policy and named location that CIPP removes when the trip
+ends), and a **Huntress Managed ITDR Expected rule** on the traveller's identity with the same
+dates — see Hudu doc 10, Decision 5. The `Vacation Exclusion - <policy>` groups CIPP creates are
+the only other exclusion a PTS CA policy may carry: never populated by hand, never on any policy
+but CA001. The earlier rule (temporarily adding the destination country to `ALLOWED COUNTRIES`)
+is retired — it opened the country to every user in the tenant and relied on a calendar entry for
+its removal. SIGIL shows the exclusion on the CA001 row with the traveller and the end date, and
+flags one that outlives its date.
+
 ## Licensing note (corrects an old claim)
 
 CA005/CA006 were previously held back as "not licensed" — **that was wrong.** Business Premium
